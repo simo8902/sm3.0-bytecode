@@ -1,6 +1,6 @@
 # sm3.0-bytecode
 
-1. PDHS CONTAINER FORMAT
+# 1. PDHS CONTAINER FORMAT
 
 0x00  4 bytes  "PDHS" magic\
 0x04  4 bytes  version = 1 (uint32 LE)\
@@ -16,7 +16,7 @@ blob_size bytes raw blob
 
 ––––––––––––––––––––––––––––––––
 
-2. ENTRY TYPES
+# 2. ENTRY TYPES
 
 66 total entries\
 43 = actual shader bytecode\
@@ -28,7 +28,7 @@ Names with b_* or p_* usually fall into this category.
 
 ––––––––––––––––––––––––––––––––
 
-3. SUB-BLOB STRUCTURE
+# 3. SUB-BLOB STRUCTURE
 
 Inside shader blobs, you get mini-chunks separated like this:
 
@@ -56,7 +56,7 @@ Anything else -> not a shader, move along
 
 ––––––––––––––––––––––––––––––––
 
-4. SHADER RECONSTRUCTION
+# 4. SHADER RECONSTRUCTION
 
 This container stores shaders in a cursed layout:
 
@@ -88,7 +88,7 @@ len(output) == len(original_blob)
 
 ––––––––––––––––––––––––––––––––
 
-5. FX / RENDER-STATE BLOBS
+# 5. FX / RENDER-STATE BLOBS
 
 If sub-blob magic isn’t DX9 shader magic, it’s FX
 
@@ -110,7 +110,7 @@ FXLC encodes render states like CullMode, blending, etc., in compact bytecode
 
 ––––––––––––––––––––––––––––––––
 
-6. USAGE
+# 6. USAGE
 
 python extract_sm30.py [input] [outdir] [--dump-fx]
 
@@ -122,17 +122,19 @@ fx*<entry>_<i>_k<kind>.bin
 
 7. SAMPLE DATA from fxc decompiler
 
-// Parameters: 							\				
-//										\				
-//   sampler2D diffMapSampler;			\
-//										\
-//										\
-// Registers:							\
-//										\
-//   Name           Reg   Size			\
-//   -------------- ----- ----			\
-//   diffMapSampler s0       1			\
+```
+// Params:
 //
+//   sampler2D diffMapSampler;
+//
+//
+// Registers:
+//
+//   Name           Reg   Size
+//   -------------- ----- ----
+//   diffMapSampler s0       1
+//
+```
 
     ps_3_0
     dcl_texcoord v0.xy
