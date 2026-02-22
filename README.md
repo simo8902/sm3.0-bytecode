@@ -14,8 +14,6 @@ name_len bytes ASCII name\
 uint32 blob_size\
 blob_size bytes raw blob
 
-––––––––––––––––––––––––––––––––
-
 # 2. ENTRY TYPES
 
 66 total entries\
@@ -25,8 +23,6 @@ blob_size bytes raw blob
 If the blob starts with 0x0109FFFE, that’s just a constant/register table. No DX9 shader inside. We skip. Not a shader. Don’t romanticize it.
 
 Names with b_* or p_* usually fall into this category.
-
-––––––––––––––––––––––––––––––––
 
 # 3. SUB-BLOB STRUCTURE
 
@@ -53,8 +49,6 @@ We detect real shaders via first 4 bytes of sub-blob:
 00 03 FF FF -> PS SM3.0\
 00 03 FE FF -> VS SM3.0\
 Anything else -> not a shader, move along
-
-––––––––––––––––––––––––––––––––
 
 # 4. SHADER RECONSTRUCTION
 
@@ -86,8 +80,6 @@ END_TOKEN = FF FF 00 00
 Invariant across all 453 shaders:\
 len(output) == len(original_blob)
 
-––––––––––––––––––––––––––––––––
-
 # 5. FX / RENDER-STATE BLOBS
 
 If sub-blob magic isn’t DX9 shader magic, it’s FX
@@ -107,8 +99,6 @@ FXLC -> render-state bytecode
 fxc.exe refuses these because it only accepts shader types 0xFFFF (PS) and 0xFEFF (VS)
 
 FXLC encodes render states like CullMode, blending, etc., in compact bytecode
-
-––––––––––––––––––––––––––––––––
 
 # 6. USAGE
 
