@@ -81,14 +81,28 @@ def reconstruct_shader(blob):
     if header_end >= len(blob):
         return blob                       # malformed — return as-is
 
-    # Find the first FFFF0000 that follows the header
-    split_off = blob.find(END_TOKEN, header_end)
+    # Walk the token stream from header_end, skipping comment bodies,
+    # to find the first FFFF0000
+    p = header_end
+    split_off = -1
+    while p + 4 <= len(blob):
+        word = struct.unpack_from("<I", blob, p)[0]
+        lo16 = word & 0xFFFF
+        if blob[p:p + 4] == END_TOKEN:       # real FFFF0000
+            split_off = p
+            break
+        elif lo16 == 0xFFFE:                 # comment — skip entire body
+            clen = word >> 16
+            p += 4 + clen * 4
+        else:                                # regular instruction
+            size_field = (word >> 24) & 0xF
+            p += (size_field + 1) * 4 if size_field else 4
 
     if split_off == -1:
         # No end token found at all — return as-is
         return blob
 
-    tail = blob[split_off + 4:]          # def/dcl instructions
+    tail = blob[split_off + 4:]          # def/dcl instructions (if any)
     main = blob[header_end:split_off]    # arithmetic/texture instructions
     header = blob[:header_end]           # version + CTAB
 
@@ -98,9 +112,6 @@ def reconstruct_shader(blob):
 
     # Reassemble in the correct DX9 instruction order
     reconstructed = header + tail + main + END_TOKEN
-    assert len(reconstructed) == len(blob), (
-        f"Size mismatch after reconstruct: {len(reconstructed)} != {len(blob)}"
-    )
     return reconstructed
 
 
